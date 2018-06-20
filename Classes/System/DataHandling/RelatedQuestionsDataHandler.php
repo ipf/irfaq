@@ -26,6 +26,7 @@ namespace Netcreators\Irfaq\System\Backend\DataHandling;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
@@ -193,13 +194,13 @@ class RelatedQuestionsDataHandler
             }
             $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_irfaq']['insideTCEmain'] = true;
 
-            /* @var $tce \TYPO3\CMS\Core\DataHandling\DataHandler */
-            $tce = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
-            $tce->start($datamap, null, $pObj->BE_USER);
-            $tce->process_datamap();
-            if (count($tce->errorLog)) {
+            /* @var $dataHandler \TYPO3\CMS\Core\DataHandling\DataHandler */
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start($datamap, null, $pObj->BE_USER);
+            $dataHandler->process_datamap();
+            if (count($dataHandler->errorLog)) {
                 /* @var $pObj \TYPO3\CMS\Core\DataHandling\DataHandler */
-                $pObj->errorLog = array_merge($pObj->errorLog, $tce->errorLog);
+                $pObj->errorLog = array_merge($pObj->errorLog, $dataHandler->errorLog);
             }
             $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_irfaq']['insideTCEmain'] = false;
         }

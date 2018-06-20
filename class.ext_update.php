@@ -32,7 +32,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ext_update
 {
-    /** @var language Language support */
+    /** @var \TYPO3\CMS\Lang\LanguageService Language support */
     protected $lang;
 
     /** Defines new sheets and fields inside them */
@@ -117,8 +117,8 @@ class ext_update
         $replaceEmpty = intval(GeneralUtility::_GP('replaceEmpty'));
 
         /** @var \TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools $flexformtools */
-        $flexformtools = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools');
-        /* @var $flexformtools t3lib_flexformtools */
+        $flexformtools = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools::class);
+
         $GLOBALS['TYPO3_CONF_VARS']['BE']['compactFlexFormXML'] = true;
         $GLOBALS['TYPO3_CONF_VARS']['BE']['niceFlexFormXMLtags'] = true;
 
@@ -160,18 +160,17 @@ class ext_update
 
         if ($converted > 0) {
             // Update data
-            /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $tce */
-            $tce = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
-            /* @var $tce t3lib_TCEmain */
-            $tce->start($data, null);
-            $tce->process_datamap();
-            if (count($tce->errorLog) > 0) {
+            /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
+            $dataHandler = GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
+            $dataHandler->start($data, null);
+            $dataHandler->process_datamap();
+            if (count($dataHandler->errorLog) > 0) {
                 $content .= '<p>'.$this->lang->getLL('errors').'</p><ul><li>'.
-                    implode('</li><li>', $tce->errorLog).'</li></ul>';
+                    implode('</li><li>', $dataHandler->errorLog).'</li></ul>';
             }
             // Clear cache
             foreach ($pidList as $pid) {
-                $tce->clear_cacheCmd($pid);
+                $dataHandler->clear_cacheCmd($pid);
             }
         }
         $content .= '<p>'.sprintf($this->lang->getLL('result'), $results, $converted).

@@ -23,8 +23,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
         .':Netcreators\Irfaq\System\Backend\DataHandling\RelatedQuestionsDataHandler';
 
 // Hook to comments for comments closing
-$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['comments']['closeCommentsAfter'][$_EXTKEY]
-    = 'EXT:irfaq/Classes/Hooks/Comments/CommentsCloseTimeHook.php'
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['comments']['closeCommentsAfter']['irfaq']
+    = 'EXT:irfaq/Classes/Hooks/Comments/CloseCommentsAfterHook.php'
         .':Netcreators\Irfaq\Hooks\Comments\CloseCommentsAfterHook->irfaqHook';
 
 // Backend Page Module hook

@@ -668,13 +668,14 @@ class FaqController extends AbstractPlugin
      */
     public function validateFields($fieldlist)
     {
-        $checkedFields = [];
         $fArr = GeneralUtility::trimExplode(',', $fieldlist, 1);
-        while (list(, $fN) = each($fArr)) {
-            if (in_array($fN, $this->fieldNames)) {
-                $checkedFields[] = $fN;
+
+        $checkedFields = array_map(function ($field) {
+            if (in_array($field, $this->fieldNames)) {
+                $checkedFields[] = $field;
             }
-        }
+        }, $fArr);
+
         $checkedFieldlist = implode($checkedFields, ',');
 
         return $checkedFieldlist;
@@ -1018,10 +1019,7 @@ class FaqController extends AbstractPlugin
      */
     protected function getDatabaseConnection()
     {
-        /* @var \TYPO3\CMS\Core\Database\DatabaseConnection $TYPO3_DB */
-        global $TYPO3_DB;
-
-        return $TYPO3_DB;
+        return $GLOBALS['TYPO3_DB'];
     }
 
     /**
@@ -1029,9 +1027,6 @@ class FaqController extends AbstractPlugin
      */
     protected function getTypoScriptFrontendController()
     {
-        /* @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $TSFE */
-        global $TSFE;
-
-        return $TSFE;
+        return $GLOBALS['TSFE'];
     }
 }
