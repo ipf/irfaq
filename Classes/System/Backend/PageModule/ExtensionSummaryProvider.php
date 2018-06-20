@@ -27,30 +27,27 @@ namespace Netcreators\Irfaq\System\Backend\PageModule;
  ***************************************************************/
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-
 /**
- * Hook to display verbose information about pi1 plugin in Web>Page module
+ * Hook to display verbose information about pi1 plugin in Web>Page module.
  *
  * @author    Dmitry Dulepov <dmitry@typo3.org>
- * @package    TYPO3
- * @subpackage    tx_irfaq
  */
 class ExtensionSummaryProvider
 {
     /**
-     * Returns information about this extension's pi1 plugin
+     * Returns information about this extension's pi1 plugin.
      *
-     * @param    array $params Parameters to the hook
-     * @param    object $pObj A reference to calling object
-     * @return    string        Information about pi1 plugin
+     * @param array  $params Parameters to the hook
+     * @param object $pObj   A reference to calling object
+     *
+     * @return string Information about pi1 plugin
      */
-    function getExtensionSummary($params, &$pObj)
+    public function getExtensionSummary($params, &$pObj)
     {
-
         $languageService = $this->getLanguageService();
         $result = '';
 
-        if ($params['row']['list_type'] == 'irfaq_pi1') {
+        if ('irfaq_pi1' == $params['row']['list_type']) {
             $data = GeneralUtility::xml2array($params['row']['pi_flexform']);
             if (is_array($data)) {
                 $modes = [];
@@ -88,6 +85,7 @@ class ExtensionSummaryProvider
                 $result = $languageService->sL('LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq.pi_flexform.no_view');
             }
         }
+
         return $result;
     }
 
@@ -99,5 +97,3 @@ class ExtensionSummaryProvider
         return $GLOBALS['LANG'];
     }
 }
-
-

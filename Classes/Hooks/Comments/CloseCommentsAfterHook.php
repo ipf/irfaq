@@ -42,41 +42,44 @@ namespace Netcreators\Irfaq\Hooks\Comments;
 class CloseCommentsAfterHook
 {
     /**
-     * Provides comment closing date to comments extension for tt_news items
+     * Provides comment closing date to comments extension for tt_news items.
      *
-     * @param    array $params Parameters to the function
-     * @param    \tx_comments_pi1 $pObj Parent object
-     * @return   bool|int
+     * @param array            $params Parameters to the function
+     * @param \tx_comments_pi1 $pObj   Parent object
+     *
+     * @return bool|int
      */
-    function irfaqHook(&$params, &$pObj)
+    public function irfaqHook(&$params, &$pObj)
     {
-        return ($params['table'] !== 'tx_irfaq_q' ? false : $this->getCloseTime(
+        return 'tx_irfaq_q' !== $params['table'] ? false : $this->getCloseTime(
             'tx_irfaq_q',
             $params['uid'],
             $pObj->cObj
-        ));
+        );
     }
 
     /**
-     * Gets closing time from a record
+     * Gets closing time from a record.
      *
-     * @param    string $table Table name
-     * @param    int $uid UID of the record
-     * @param    \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $cObj COBJECT
-     * @return    int    Closing timestamp
+     * @param string                                                  $table Table name
+     * @param int                                                     $uid   UID of the record
+     * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $cObj  COBJECT
+     *
+     * @return int Closing timestamp
      */
-    function getCloseTime($table, $uid, &$cObj)
+    public function getCloseTime($table, $uid, &$cObj)
     {
         $result = 0;
         $recs = $this->getDatabaseConnection()->exec_SELECTgetRows(
             'disable_comments,comments_closetime',
             $table,
-            'uid=' . intval($uid) . $cObj->enableFields($table)
+            'uid='.intval($uid).$cObj->enableFields($table)
         );
         if (count($recs)) {
             $result = $recs[0]['disable_comments'] ? 0 :
                 ($recs[0]['comments_closetime'] ? $recs[0]['comments_closetime'] : PHP_INT_MAX);
         }
+
         return $result;
     }
 
@@ -85,10 +88,9 @@ class CloseCommentsAfterHook
      */
     protected function getDatabaseConnection()
     {
-        /** @var \TYPO3\CMS\Core\Database\DatabaseConnection $TYPO3_DB */
+        /* @var \TYPO3\CMS\Core\Database\DatabaseConnection $TYPO3_DB */
         global $TYPO3_DB;
 
         return $TYPO3_DB;
     }
 }
-

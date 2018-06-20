@@ -35,10 +35,7 @@ use TYPO3\CMS\Frontend\Plugin\AbstractPlugin;
  * Plugin 'Simple FAQ' for the 'irfaq' extension.
  *
  * @author    Netcreators <extensions@netcreators.com>
- * @package TYPO3
- * @subpackage irfaq
  */
-
 
 /**
  * Creates a faq list.
@@ -60,21 +57,21 @@ class FaqController extends AbstractPlugin
     protected $showUid = 0;
 
     /**
-     * See config.sys_language_overlay in TSRef
+     * See config.sys_language_overlay in TSRef.
      *
      * @var string
      */
     protected $sys_language_contentOL;
 
     /**
-     * See config.sys_language_mode in TSRef. This variable includes only keyword, not list of languges
+     * See config.sys_language_mode in TSRef. This variable includes only keyword, not list of languges.
      *
      * @var string
      */
     protected $sys_language_mode;
 
     /**
-     * A list of languages to look overlays in
+     * A list of languages to look overlays in.
      *
      * @var array
      */
@@ -91,13 +88,14 @@ class FaqController extends AbstractPlugin
 
     /**
      * main function, which is called at startup
-     * calls init() and determines view
+     * calls init() and determines view.
      *
-     * @param    string $content : output string of page
-     * @param    array $conf : configuration array from TS
-     * @return    string        $content: output of faq plugin
+     * @param string $content : output string of page
+     * @param array  $conf    : configuration array from TS
+     *
+     * @return string $content: output of faq plugin
      */
-    function main($content, $conf)
+    public function main($content, $conf)
     {
         $this->init($conf);
 
@@ -133,12 +131,11 @@ class FaqController extends AbstractPlugin
     }
 
     /**
-     * initializes configuration variables
+     * initializes configuration variables.
      *
-     * @param    array $conf : configuration array from TS
-     * @return    void
+     * @param array $conf : configuration array from TS
      */
-    function init($conf)
+    public function init($conf)
     {
         $this->conf = $conf;
 
@@ -180,7 +177,7 @@ class FaqController extends AbstractPlugin
                 trim($this->conf['categorySelection']);
 
             // ignore category selection if categoryMode isn't set
-            if ($this->conf['categoryMode'] != 0) {
+            if (0 != $this->conf['categoryMode']) {
                 $this->conf['catExclusive'] = $this->conf['catSelection'];
             } else {
                 $this->conf['catExclusive'] = 0;
@@ -206,7 +203,7 @@ class FaqController extends AbstractPlugin
                 'sorting',
                 'sDEF'
             );
-            $this->conf['orderBy'] = ($ffSorting !== 'ts') ?
+            $this->conf['orderBy'] = ('ts' !== $ffSorting) ?
                 $ffSorting :
                 trim($this->conf['orderBy']);
 
@@ -215,7 +212,7 @@ class FaqController extends AbstractPlugin
                 'emptySearchAtStart',
                 'sSEARCH'
             );
-            $this->conf['emptySearchAtStart'] = $ffEmptySearchAtStart != '' ?
+            $this->conf['emptySearchAtStart'] = '' != $ffEmptySearchAtStart ?
                 $ffEmptySearchAtStart :
                 trim($this->conf['emptySearchAtStart']);
 
@@ -243,7 +240,6 @@ class FaqController extends AbstractPlugin
                 implode(GeneralUtility::intExplode(',', $pidList), ',') :
                 $this->getTypoScriptFrontendController()->id;
 
-
             //get items recursive
             $recursive = $this->pi_getFFvalue(
                 $this->cObj->data['pi_flexform'],
@@ -268,7 +264,7 @@ class FaqController extends AbstractPlugin
             $this->conf['enableRatings'] = false;
         } else {
             $val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'enableRatings', 'sDEF');
-            if ($val != '') {
+            if ('' != $val) {
                 $this->conf['enableRatings'] = $val;
             }
         }
@@ -279,7 +275,7 @@ class FaqController extends AbstractPlugin
         $this->initCategories(); // initialize category-array
         $this->initExperts(); // initialize experts-array
 
-        mt_srand((double)microtime() * 1000000);
+        mt_srand((float) microtime() * 1000000);
         $this->hash = substr(md5(mt_rand()), 0, 5);
 
         // Language settings
@@ -291,7 +287,7 @@ class FaqController extends AbstractPlugin
 
         $this->content_languages = [$this->getTypoScriptFrontendController()->sys_language_uid];
 
-        if ($languages != '' && $this->sys_language_mode == 'content_fallback') {
+        if ('' != $languages && 'content_fallback' == $this->sys_language_mode) {
             foreach (GeneralUtility::trimExplode(',', $languages, true) as $language) {
                 $this->content_languages[] = $language;
             }
@@ -312,10 +308,8 @@ class FaqController extends AbstractPlugin
     /**
      * Getting all tx_irfaq_cat categories into internal array
      * partly taken from tt_news - thx Rupert!!!
-     *
-     * @return    void
      */
-    function initCategories()
+    public function initCategories()
     {
         $rootlineStoragePid = $this->getStorageSiterootPids();
         $storagePidCsv = implode(
@@ -326,13 +320,12 @@ class FaqController extends AbstractPlugin
         $res = $this->getDatabaseConnection()->exec_SELECTquery(
             '*',
             'tx_irfaq_cat LEFT JOIN tx_irfaq_q_cat_mm ON tx_irfaq_q_cat_mm.uid_foreign = tx_irfaq_cat.uid',
-            'tx_irfaq_cat.pid IN (' . $storagePidCsv . ')' . $this->cObj->enableFields('tx_irfaq_cat'),
+            'tx_irfaq_cat.pid IN ('.$storagePidCsv.')'.$this->cObj->enableFields('tx_irfaq_cat'),
             '',
             'tx_irfaq_cat.sorting'
         );
 
         while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
-
             $catTitle = $row['title'];
             $catShortcut = $row['shortcut'];
 
@@ -340,7 +333,7 @@ class FaqController extends AbstractPlugin
                 $this->categories[$row['uid_local']][] = [
                     'title' => $catTitle,
                     'catid' => $row['uid_foreign'],
-                    'shortcut' => $catShortcut
+                    'shortcut' => $catShortcut,
                 ];
             } else {
                 $this->categories['0'][$row['uid']] = $catTitle;
@@ -350,17 +343,15 @@ class FaqController extends AbstractPlugin
     }
 
     /**
-     * Getting all experts into internal array
-     *
-     * @return    void
+     * Getting all experts into internal array.
      */
-    function initExperts()
+    public function initExperts()
     {
         // Fetching experts
         $res = $this->getDatabaseConnection()->exec_SELECTquery(
             '*',
             'tx_irfaq_expert',
-            '1=1' . $this->cObj->enableFields('tx_irfaq_expert')
+            '1=1'.$this->cObj->enableFields('tx_irfaq_expert')
         );
 
         while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
@@ -376,9 +367,9 @@ class FaqController extends AbstractPlugin
     /**
      * Shows search.
      *
-     * @return    string        Generated content
+     * @return string Generated content
      */
-    function searchView()
+    public function searchView()
     {
         $template['total'] = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_SEARCH###');
 
@@ -395,11 +386,11 @@ class FaqController extends AbstractPlugin
     }
 
     /**
-     * creates the dynamic view with DHTML
+     * creates the dynamic view with DHTML.
      *
-     * @return    string        faq list
+     * @return string faq list
      */
-    function dynamicView()
+    public function dynamicView()
     {
         $template = [];
         $subpartArray = [];
@@ -416,7 +407,6 @@ class FaqController extends AbstractPlugin
         $subpartArray['###CONTENT###'] = $this->fillMarkers($template['content']);
 
         if (!empty($this->faqCount)) {
-
             $markerArray = [
                 '###HASH###' => $this->hash,
                 '###TOTALCOUNT###' => $this->faqCount,
@@ -439,18 +429,18 @@ class FaqController extends AbstractPlugin
     }
 
     /**
-     * creates the static view without dhtml
+     * creates the static view without dhtml.
      *
-     * @return    string        faq list
+     * @return string faq list
      */
-    function staticView()
+    public function staticView()
     {
         $templateName = 'TEMPLATE_STATIC';
 
         $template = [];
         $template['total'] = $this->cObj->getSubpart(
             $this->templateCode,
-            '###' . $templateName . '###'
+            '###'.$templateName.'###'
         );
 
         $temp = $this->cObj->getSubPart($template['total'], '###QUESTIONS###');
@@ -469,26 +459,26 @@ class FaqController extends AbstractPlugin
     }
 
     /**
-     * Replaces markers with content
+     * Replaces markers with content.
      *
-     * @param    string $template : the html with markers to substitude
-     * @return    string        template with substituted markers
+     * @param string $template : the html with markers to substitude
+     *
+     * @return string template with substituted markers
      */
-    function fillMarkers($template)
+    public function fillMarkers($template)
     {
-
         $content = '';
 
-        $where = '1 = 1' . $this->cObj->enableFields('tx_irfaq_q');
+        $where = '1 = 1'.$this->cObj->enableFields('tx_irfaq_q');
         $selectConf = $this->getSelectConf($where);
         $selectConf['selectFields'] = 'DISTINCT tx_irfaq_q.uid, tx_irfaq_q.pid, tx_irfaq_q.q, tx_irfaq_q.q_from, tx_irfaq_q.a, tx_irfaq_q.cat, tx_irfaq_q.expert, tx_irfaq_q.related, tx_irfaq_q.related_links, tx_irfaq_q.enable_ratings, tx_irfaq_q.sys_language_uid, tx_irfaq_q.l18n_parent, tx_irfaq_q.l18n_diffsource';
-        $selectConf['orderBy'] = $this->conf['orderBy'] ? 'tx_irfaq_q.' . $this->conf['orderBy'] : 'tx_irfaq_q.sorting';
+        $selectConf['orderBy'] = $this->conf['orderBy'] ? 'tx_irfaq_q.'.$this->conf['orderBy'] : 'tx_irfaq_q.sorting';
 
         $res = $this->getDatabaseConnection()->exec_SELECT_queryArray(
             [
                 'SELECT' => $selectConf['selectFields'],
-                'FROM' => 'tx_irfaq_q' . ($selectConf['leftjoin'] ? ' LEFT OUTER JOIN ' . $selectConf['leftjoin'] : ''),
-                'WHERE' => $selectConf['where'] . ' AND pid in (' . $selectConf['pidInList'] . ')',
+                'FROM' => 'tx_irfaq_q'.($selectConf['leftjoin'] ? ' LEFT OUTER JOIN '.$selectConf['leftjoin'] : ''),
+                'WHERE' => $selectConf['where'].' AND pid in ('.$selectConf['pidInList'].')',
                 'GROUPBY' => '',
                 'ORDERBY' => $selectConf['orderBy'],
                 'LIMIT' => '',
@@ -519,13 +509,14 @@ class FaqController extends AbstractPlugin
 
     /**
      * Fills in the Category markerArray with data
-     * also taken from tt_news ;-)
+     * also taken from tt_news ;-).
      *
-     * @param    array $markerArray : partly filled marker array
-     * @param    array $row : result row for a news item
-     * @return    array        $markerArray: filled markerarray
+     * @param array $markerArray : partly filled marker array
+     * @param array $row         : result row for a news item
+     *
+     * @return array $markerArray: filled markerarray
      */
-    function getCatMarkerArray($markerArray, $row)
+    public function getCatMarkerArray($markerArray, $row)
     {
         // clear the category text marker if the FAQ item has no categories
         $markerArray['###FAQ_CATEGORY###'] = '';
@@ -542,14 +533,14 @@ class FaqController extends AbstractPlugin
 
             while (list($key, $val) = each($this->categories[$row['uid']])) {
                 // find categories, wrap them with links and collect them in the array $faq_category.
-                if ($this->conf['catTextMode'] == 1) {
+                if (1 == $this->conf['catTextMode']) {
                     // link to category shortcut page
                     $faq_category[] = $this->pi_linkToPage(
                         $this->categories[$row['uid']][$key]['title'],
                         $this->categories[$row['uid']][$key]['shortcut']
                     );
                 } else {
-                    if ($this->conf['catTextMode'] == 2) {
+                    if (2 == $this->conf['catTextMode']) {
                         // act as category selector
                         $faq_category[] = $this->pi_linkToPage(
                             $this->categories[$row['uid']][$key]['title'],
@@ -580,31 +571,32 @@ class FaqController extends AbstractPlugin
     }
 
     /**
-     * build the selectconf (array of query-parameters) to get the faq items from the db
+     * build the selectconf (array of query-parameters) to get the faq items from the db.
      *
-     * @param    string $where : where-part of the query
-     * @return    array        the selectconf for the display of a news item
+     * @param string $where : where-part of the query
+     *
+     * @return array the selectconf for the display of a news item
      */
-    function getSelectConf($where)
+    public function getSelectConf($where)
     {
         $selectConf = [];
         $selectConf['pidInList'] = $this->conf['pidList'];
         $selectConf['where'] = $where;
 
-        if ((int)$this->conf['faqListRespectSysLanguageUid']) {
+        if ((int) $this->conf['faqListRespectSysLanguageUid']) {
             $selectConf['where'] .= ' AND tx_irfaq_q.sys_language_uid='
-                . (int)$this->getTypoScriptFrontendController()->config['config']['sys_language_uid'];
+                .(int) $this->getTypoScriptFrontendController()->config['config']['sys_language_uid'];
         }
 
         if ($GLOBALS['TSFE']->sys_page->versioningPreview) {
-            $selectConf['where'] .= ' AND (t3ver_wsid = 0 OR t3ver_wsid = ' . $GLOBALS['TSFE']->sys_page->versioningWorkspaceId . ')';
+            $selectConf['where'] .= ' AND (t3ver_wsid = 0 OR t3ver_wsid = '.$GLOBALS['TSFE']->sys_page->versioningWorkspaceId.')';
         }
 
         //build SQL on condition of categoryMode
-        if ($this->conf['categoryMode'] == 1 && trim($this->conf['catExclusive']) != '') {
+        if (1 == $this->conf['categoryMode'] && '' != trim($this->conf['catExclusive'])) {
             $selectConf['leftjoin'] = 'tx_irfaq_q_cat_mm ON tx_irfaq_q.uid = tx_irfaq_q_cat_mm.uid_local';
-            $selectConf['where'] .= ' AND (IFNULL(tx_irfaq_q_cat_mm.uid_foreign,0) IN (' . $this->conf['catExclusive'] . '))';
-        } elseif ($this->conf['categoryMode'] == -1) {
+            $selectConf['where'] .= ' AND (IFNULL(tx_irfaq_q_cat_mm.uid_foreign,0) IN ('.$this->conf['catExclusive'].'))';
+        } elseif (-1 == $this->conf['categoryMode']) {
             $selectConf['leftjoin'] = 'tx_irfaq_q_cat_mm ON (tx_irfaq_q.uid = tx_irfaq_q_cat_mm.uid_local AND (tx_irfaq_q_cat_mm.uid_foreign=';
 
             //multiple categories selected?
@@ -638,21 +630,24 @@ class FaqController extends AbstractPlugin
      * Generates a search where clause.
      *
      * @param string $searchWords
-     * @return    string        querypart
+     *
+     * @return string querypart
      */
-    function searchWhere($searchWords)
+    public function searchWhere($searchWords)
     {
         $where = $this->cObj->searchWhere($searchWords, $this->searchFieldList, 'tx_irfaq_q');
+
         return $where;
     }
 
     /**
-     * Format string with general_stdWrap from configuration
+     * Format string with general_stdWrap from configuration.
      *
      * @param    string        string to wrap
-     * @return    string        wrapped string
+     *
+     * @return string wrapped string
      */
-    function formatStr($str)
+    public function formatStr($str)
     {
         if (is_array($this->conf['general_stdWrap.']) || count($this->conf['general_stdWrap.']) > 0) {
             $str = $this->cObj->stdWrap(
@@ -660,16 +655,18 @@ class FaqController extends AbstractPlugin
                 $this->conf['general_stdWrap.']
             );
         }
+
         return $str;
     }
 
     /**
-     * checks for each field of a list of items if it exists in the tx_irfaq_q table ($this->fieldNames) and returns the validated fields
+     * checks for each field of a list of items if it exists in the tx_irfaq_q table ($this->fieldNames) and returns the validated fields.
      *
-     * @param    string $fieldlist : a list of fields to ckeck
-     * @return    string        the list of validated fields
+     * @param string $fieldlist : a list of fields to ckeck
+     *
+     * @return string the list of validated fields
      */
-    function validateFields($fieldlist)
+    public function validateFields($fieldlist)
     {
         $checkedFields = [];
         $fArr = GeneralUtility::trimExplode(',', $fieldlist, 1);
@@ -679,16 +676,18 @@ class FaqController extends AbstractPlugin
             }
         }
         $checkedFieldlist = implode($checkedFields, ',');
+
         return $checkedFieldlist;
     }
 
     /**
-     * Makes formatted list of related FAQ entries
+     * Makes formatted list of related FAQ entries.
      *
-     * @param    string $list Comma-separated list of related-entires
-     * @return    string        Generated HTML or empty string if no related entries
+     * @param string $list Comma-separated list of related-entires
+     *
+     * @return string Generated HTML or empty string if no related entries
      */
-    function getRelatedEntries($list)
+    public function getRelatedEntries($list)
     {
         $content = '';
         $list = GeneralUtility::trimExplode(',', $list, true); // Have to do that because there can be empty elements!
@@ -696,7 +695,7 @@ class FaqController extends AbstractPlugin
             $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
                 '*',
                 'tx_irfaq_q',
-                'uid IN (' . implode(',', $list) . ')' .
+                'uid IN ('.implode(',', $list).')'.
                 $this->cObj->enableFields('tx_irfaq_q')
             );
             if (is_array($rows)) {
@@ -728,16 +727,18 @@ class FaqController extends AbstractPlugin
                 );
             }
         }
+
         return $content;
     }
 
     /**
-     * Makes formatted list of related links
+     * Makes formatted list of related links.
      *
-     * @param    string $list NL-separated list of related links
-     * @return    string        Generated HTML or empty string if no related links
+     * @param string $list NL-separated list of related links
+     *
+     * @return string Generated HTML or empty string if no related links
      */
-    function getRelatedLinks($list)
+    public function getRelatedLinks($list)
     {
         $content = '';
         $list = GeneralUtility::trimExplode(
@@ -761,18 +762,21 @@ class FaqController extends AbstractPlugin
                 ['###RELATED_LINK_ENTRY###' => $content]
             );
         }
+
         return $content;
     }
 
     /**
-     * Creates marker array for a single FAQ row
+     * Creates marker array for a single FAQ row.
      *
-     * @param    array &$row A row from tx_irfaq_q. Passed by reference to save memory.
-     * @param    int $i Row index
-     * @return    array        Generated marker array
+     * @param array &$row A row from tx_irfaq_q. Passed by reference to save memory.
+     * @param int   $i    Row index
+     *
+     * @return array Generated marker array
+     *
      * @see    fillMarkers()
      */
-    function fillMarkerArrayForRow(&$row, $i)
+    public function fillMarkerArrayForRow(&$row, $i)
     {
         $markerArray = [];
 
@@ -799,7 +803,7 @@ class FaqController extends AbstractPlugin
                 'LOAD_REGISTER',
                 [
                     'faqExpertEmail' => $this->experts[$row['expert']]['email'],
-                    'faqExpertUrl' => $this->experts[$row['expert']]['url']
+                    'faqExpertUrl' => $this->experts[$row['expert']]['url'],
                 ]
             );
             $markerArray['###FAQ_EXPERT###'] = $this->cObj->stdWrap(
@@ -873,9 +877,9 @@ class FaqController extends AbstractPlugin
             }
         }
 
-        $markerArray['###FAQ_PM_IMG###'] = '<img src="' .
-            $this->conf['iconPlus'] . '" id="irfaq_pm_' . $i . '_' . $this->hash . '" alt="' .
-            $this->pi_getLL('fold_faq') . '" />';
+        $markerArray['###FAQ_PM_IMG###'] = '<img src="'.
+            $this->conf['iconPlus'].'" id="irfaq_pm_'.$i.'_'.$this->hash.'" alt="'.
+            $this->pi_getLL('fold_faq').'" />';
 
         $markerArray['###HASH###'] = $this->hash;
 
@@ -889,16 +893,16 @@ class FaqController extends AbstractPlugin
     }
 
     /**
-     * Shows single FAQ item
+     * Shows single FAQ item.
      *
-     * @return    string        Generated content
+     * @return string Generated content
      */
-    function singleView()
+    public function singleView()
     {
         $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
             '*',
             'tx_irfaq_q',
-            'uid=' . intval($this->showUid) .
+            'uid='.intval($this->showUid).
             $this->cObj->enableFields('tx_irfaq_q')
         );
         if (count($rows)) {
@@ -906,7 +910,7 @@ class FaqController extends AbstractPlugin
                 $rows[0] = $row;
             }
         }
-        if (count($rows) == 0) {
+        if (0 == count($rows)) {
             $content = $this->pi_getLL('noSuchEntry');
         } else {
             $template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_SINGLE_VIEW###');
@@ -920,51 +924,56 @@ class FaqController extends AbstractPlugin
             $content = $this->cObj->substituteMarkerArrayCached($template, $markers);
             $this->cObj->lastChanged($row['tstamp']);
         }
+
         return $content;
     }
 
     /**
-     * Creates a set of links to a separate page with answer. This mode is suitable if you want comments for FAQ entries
+     * Creates a set of links to a separate page with answer. This mode is suitable if you want comments for FAQ entries.
      *
      * @return string Generated FAQ list
      */
-    function staticSeparateView()
+    public function staticSeparateView()
     {
         $template_sub = $this->cObj->getSubPart($this->templateCode, '###TEMPLATE_STATIC_SEPARATE###');
         $template = $this->cObj->getSubPart($template_sub, '###QUESTIONS###');
         $subpartArray['###QUESTIONS###'] = $this->fillMarkers($template);
+
         return $this->cObj->substituteMarkerArrayCached($template_sub, [], $subpartArray);
     }
 
     /**
      * Obtains rating HTML for row if enabled.
      *
-     * @param    array $row Database row from tx_irfaq_q table
-     * @return    string    Generated ratings
+     * @param array $row Database row from tx_irfaq_q table
+     *
+     * @return string Generated ratings
      */
-    function getRatingForRow($row)
+    public function getRatingForRow($row)
     {
         $result = '';
         if ($row['enable_ratings'] && $this->conf['enableRatings']) {
-            require_once(ExtensionManagementUtility::extPath('ratings', 'class.tx_ratings_api.php'));
+            require_once ExtensionManagementUtility::extPath('ratings', 'class.tx_ratings_api.php');
 
             $apiObj = GeneralUtility::makeInstance('tx_ratings_api');
             /* @var \tx_ratings_api $apiObj */
             $result = $apiObj->getRatingDisplay(
-                'tx_irfaq_q_' . ($row['l18n_parent'] ? $row['l18n_parent'] : $row['uid'])
+                'tx_irfaq_q_'.($row['l18n_parent'] ? $row['l18n_parent'] : $row['uid'])
             );
         }
+
         return $result;
     }
 
     /**
-     * Gets language overlay for the record
+     * Gets language overlay for the record.
      *
-     * @param    string $table Table name
-     * @param    array $row Row
-     * @return    mixed    Row or false if not found and no fallbacks available
+     * @param string $table Table name
+     * @param array  $row   Row
+     *
+     * @return mixed Row or false if not found and no fallbacks available
      */
-    function getLanguageOverlay($table, $row)
+    public function getLanguageOverlay($table, $row)
     {
         foreach ($this->content_languages as $language) {
             if (($result = $this->getTypoScriptFrontendController()->sys_page->getRecordOverlay(
@@ -977,9 +986,10 @@ class FaqController extends AbstractPlugin
                 return $result;
             }
         }
-        if ($this->sys_language_mode == '') {
+        if ('' == $this->sys_language_mode) {
             return $row;
         }
+
         return false;
     }
 
@@ -993,10 +1003,10 @@ class FaqController extends AbstractPlugin
 
         foreach ($rootlineUtility->get() as $pageRecord) {
             if (!$res['_STORAGE_PID']) {
-                $res['_STORAGE_PID'] = (int)$pageRecord['storage_pid'];
+                $res['_STORAGE_PID'] = (int) $pageRecord['storage_pid'];
             }
             if (!$res['_SITEROOT']) {
-                $res['_SITEROOT'] = $pageRecord['is_siteroot'] ? (int)$pageRecord['uid'] : 0;
+                $res['_SITEROOT'] = $pageRecord['is_siteroot'] ? (int) $pageRecord['uid'] : 0;
             }
         }
 
@@ -1008,7 +1018,7 @@ class FaqController extends AbstractPlugin
      */
     protected function getDatabaseConnection()
     {
-        /** @var \TYPO3\CMS\Core\Database\DatabaseConnection $TYPO3_DB */
+        /* @var \TYPO3\CMS\Core\Database\DatabaseConnection $TYPO3_DB */
         global $TYPO3_DB;
 
         return $TYPO3_DB;
@@ -1019,7 +1029,7 @@ class FaqController extends AbstractPlugin
      */
     protected function getTypoScriptFrontendController()
     {
-        /** @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $TSFE */
+        /* @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $TSFE */
         global $TSFE;
 
         return $TSFE;

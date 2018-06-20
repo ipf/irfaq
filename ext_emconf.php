@@ -30,16 +30,12 @@ $EM_CONF[$_EXTKEY] = [
     'author_company' => 'Netcreators',
     'CGLcompliance' => '',
     'CGLcompliance_note' => '',
-    'constraints' =>
-        [
-            'depends' =>
-                [
+    'constraints' => [
+            'depends' => [
                     'typo3' => '7.6.15-8.9.99',
                     'php' => '5.5-7.99',
                 ],
-            'conflicts' =>
-                [],
-            'suggests' =>
-                [],
+            'conflicts' => [],
+            'suggests' => [],
         ],
 ];

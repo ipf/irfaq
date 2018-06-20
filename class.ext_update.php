@@ -32,7 +32,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ext_update
 {
-
     /** @var language Language support */
     protected $lang;
 
@@ -45,67 +44,70 @@ class ext_update
     /**
      * Shows form and/or runs the update process.
      *
-     * @return    string    Output
+     * @return string Output
      */
-    function main()
+    public function main()
     {
         $this->lang = $this->getLanguageService();
         $this->lang->init($GLOBALS['BE_USER']->uc['lang']);
         $this->lang->includeLLFile('EXT:irfaq/Resources/Private/Language/locallang_update.xlf');
-        return ($_POST['run'] ? $this->runConversion() : $this->showForm());
+
+        return $_POST['run'] ? $this->runConversion() : $this->showForm();
     }
 
     /**
      * Checks if "UPDATE!" should be shown at all. In out case it will be shown
      * only if there are irfaq records in the system.
      *
-     * @return    boolean    true if script should be displayed
+     * @return bool true if script should be displayed
      */
-    function access()
+    public function access()
     {
         // Check if there are any instances of irfaq in the system
         list($row) = $this->getDatabaseConnection()->exec_SELECTgetRows(
             'COUNT(*) AS t',
             'tt_content',
-            'list_type=\'irfaq_pi1\'' .
-            BackendUtility::BEenableFields('tt_content') .
+            'list_type=\'irfaq_pi1\''.
+            BackendUtility::BEenableFields('tt_content').
             BackendUtility::deleteClause('tt_content')
         );
-        return ($row['t'] > 0);
+
+        return $row['t'] > 0;
     }
 
     /**
-     * Shows form to update irfaq
+     * Shows form to update irfaq.
      *
-     * @return    string    Generated form
+     * @return string Generated form
      */
-    function showForm()
+    public function showForm()
     {
-        $content = '<p>' . $this->lang->getLL('form_intro', true) . '</p>' .
-            '<form action="' . htmlspecialchars(GeneralUtility::linkThisScript()) . '" method="post">' .
-            '<input type="hidden" name="CMD[showExt]" value="irfaq" />' .
-            '<input type="hidden" name="SET[singleDetails]" value="updateModule" />' .
-            '<input type="checkbox" name="replaceEmpty" value="1" />' .
-            $this->lang->getLL('replace_empty') . '<br />' .
-            '<input type="submit" name="run" value="' .
-            $this->lang->getLL('submit_button', true) . '" /></form>';
+        $content = '<p>'.$this->lang->getLL('form_intro', true).'</p>'.
+            '<form action="'.htmlspecialchars(GeneralUtility::linkThisScript()).'" method="post">'.
+            '<input type="hidden" name="CMD[showExt]" value="irfaq" />'.
+            '<input type="hidden" name="SET[singleDetails]" value="updateModule" />'.
+            '<input type="checkbox" name="replaceEmpty" value="1" />'.
+            $this->lang->getLL('replace_empty').'<br />'.
+            '<input type="submit" name="run" value="'.
+            $this->lang->getLL('submit_button', true).'" /></form>';
+
         return $content;
     }
 
     /**
      * Runs conversion procedure.
      *
-     * @return    string    Generated content
+     * @return string Generated content
      */
-    function runConversion()
+    public function runConversion()
     {
         $content = '';
         // Select all instances
         $res = $this->getDatabaseConnection()->exec_SELECTquery(
             'uid,pid,pi_flexform',
             'tt_content',
-            'list_type=\'irfaq_pi1\'' .
-            BackendUtility::BEenableFields('tt_content') .
+            'list_type=\'irfaq_pi1\''.
+            BackendUtility::BEenableFields('tt_content').
             BackendUtility::deleteClause('tt_content')
         );
         $results = $this->getDatabaseConnection()->sql_num_rows($res);
@@ -133,7 +135,7 @@ class ext_update
                                 strlen($ffArray['data']['sDEF'][$sLang][$field]['vDEF']) > 0 &&
                                 (!isset($ffArray['data'][$sheet][$sLang][$field]) ||
                                     !isset($ffArray['data'][$sheet][$sLang][$field]['vDEF']) ||
-                                    ($replaceEmpty && strlen($ffArray['data'][$sheet][$sLang][$field]['vDEF']) == 0))
+                                    ($replaceEmpty && 0 == strlen($ffArray['data'][$sheet][$sLang][$field]['vDEF'])))
                             ) {
                                 $ffArray['data'][$sheet][$sLang][$field]['vDEF'] =
                                     $ffArray['data']['sDEF'][$sLang][$field]['vDEF'];
@@ -151,7 +153,7 @@ class ext_update
                 $data['tt_content'][$row['uid']] = [
                     'pi_flexform' => $flexformtools->flexArray2Xml($ffArray),
                 ];
-                $converted++;
+                ++$converted;
             }
         }
         $this->getDatabaseConnection()->sql_free_result($res);
@@ -164,16 +166,17 @@ class ext_update
             $tce->start($data, null);
             $tce->process_datamap();
             if (count($tce->errorLog) > 0) {
-                $content .= '<p>' . $this->lang->getLL('errors') . '</p><ul><li>' .
-                    implode('</li><li>', $tce->errorLog) . '</li></ul>';
+                $content .= '<p>'.$this->lang->getLL('errors').'</p><ul><li>'.
+                    implode('</li><li>', $tce->errorLog).'</li></ul>';
             }
             // Clear cache
             foreach ($pidList as $pid) {
                 $tce->clear_cacheCmd($pid);
             }
         }
-        $content .= '<p>' . sprintf($this->lang->getLL('result'), $results, $converted) .
+        $content .= '<p>'.sprintf($this->lang->getLL('result'), $results, $converted).
             '</p>';
+
         return $content;
     }
 
@@ -193,4 +196,3 @@ class ext_update
         return $GLOBALS['LANG'];
     }
 }
-

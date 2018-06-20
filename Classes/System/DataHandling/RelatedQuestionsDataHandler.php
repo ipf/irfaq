@@ -33,25 +33,21 @@ use TYPO3\CMS\Core\Utility\MathUtility;
  * A hook to TCEmain that processes related records.
  *
  * @author    Dmitry Dulepov <dmitry@typo3.org>
- * @package TYPO3
- * @subpackage irfaq
  */
 class RelatedQuestionsDataHandler
 {
-
     /** Saves original 'related' field before record update */
     protected $saved_related_items = false;
 
     /**
-     * Saves original record's 'related' field
+     * Saves original record's 'related' field.
      *
-     * @param    array $incomingFieldArray Field array
-     * @param    string $table Table
-     * @param    integer $id UID of the record or 'NEWxxx' string
-     * @param    \TYPO3\CMS\Core\DataHandling\DataHandler $pObj Reference to TCEmain
-     * @return    void        Nothing
+     * @param array                                    $incomingFieldArray Field array
+     * @param string                                   $table              Table
+     * @param int                                      $id                 UID of the record or 'NEWxxx' string
+     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $pObj               Reference to TCEmain
      */
-    function processDatamap_preProcessFieldArray($incomingFieldArray, $table, $id, &$pObj)
+    public function processDatamap_preProcessFieldArray($incomingFieldArray, $table, $id, &$pObj)
     {
         if ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_irfaq']['insideTCEmain']) {
             // If we were the source of this call, ignore it
@@ -62,41 +58,39 @@ class RelatedQuestionsDataHandler
         //	- we are in update operation (=$id is integer)
         //  - Below version condition added to make it compatible with Typo3 v6.1 as well -  19-07-2013
 
-        if ($table == 'tx_irfaq_q'
+        if ('tx_irfaq_q' == $table
             && MathUtility::canBeInterpretedAsInteger($id)
             && isset($incomingFieldArray['related'])
         ) {
-
             $rec = BackendUtility::getRecord($table, $id, 'related');
             $this->saved_related_items = $rec['related'];
         }
     }
 
     /**
-     * Processes related records in tx_irfaq_q
+     * Processes related records in tx_irfaq_q.
      *
-     * @param    string $status Status of the record ('new' or 'update'). Unused.
-     * @param    string $table Table name
-     * @param    mixed $id UID of the record or 'NEWxxx' string
-     * @param    array $fieldArray Added or updated fields
-     * @param    \TYPO3\CMS\Core\DataHandling\DataHandler $pObj Reference to TCEmain
-     * @return    void        Nothing
+     * @param string                                   $status     Status of the record ('new' or 'update'). Unused.
+     * @param string                                   $table      Table name
+     * @param mixed                                    $id         UID of the record or 'NEWxxx' string
+     * @param array                                    $fieldArray Added or updated fields
+     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $pObj       Reference to TCEmain
      */
-    function processDatamap_afterDatabaseOperations($status, $table, $id, $fieldArray, &$pObj)
+    public function processDatamap_afterDatabaseOperations($status, $table, $id, $fieldArray, &$pObj)
     {
         if ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_irfaq']['insideTCEmain']) {
             // If we were the source of this call, ignore it
             return;
         }
-        if ($table == 'tx_irfaq_q') {
-            if ($status == 'new') {
+        if ('tx_irfaq_q' == $table) {
+            if ('new' == $status) {
                 if ($fieldArray['related']) {
-                    $id = ($id{0} == '-' ? substr($id, 1) : $id);
+                    $id = ('-' == $id[0] ? substr($id, 1) : $id);
                     /* @var $pObj \TYPO3\CMS\Core\DataHandling\DataHandler */
                     $id = $pObj->substNEWwithIDs[$id];
                     $this->process_relatedItems($id, '', $fieldArray['related'], $pObj);
                 }
-            } elseif (isset($fieldArray['related']) && $this->saved_related_items !== false) {
+            } elseif (isset($fieldArray['related']) && false !== $this->saved_related_items) {
                 // Processing updates only if 'related' field was changed
                 $this->process_relatedItems($id, $this->saved_related_items, $fieldArray['related'], $pObj);
                 $this->saved_related_items = false;
@@ -105,46 +99,44 @@ class RelatedQuestionsDataHandler
     }
 
     /**
-     * Saves related items for current record
+     * Saves related items for current record.
      *
-     * @param    string $command Command. We are interested only in 'delete'
-     * @param    string $table Table name. We work only if 'tx_irfaq_q'
-     * @param    int $id Record uid
-     * @param    mixed $value Unused
-     * @param    \TYPO3\CMS\Core\DataHandling\DataHandler $pObj Reference to parent object
-     * @return    void        Nothing
+     * @param string                                   $command Command. We are interested only in 'delete'
+     * @param string                                   $table   Table name. We work only if 'tx_irfaq_q'
+     * @param int                                      $id      Record uid
+     * @param mixed                                    $value   Unused
+     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $pObj    Reference to parent object
      */
-    function processCmdmap_preProcess($command, $table, $id, $value, &$pObj)
+    public function processCmdmap_preProcess($command, $table, $id, $value, &$pObj)
     {
         if ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_irfaq']['insideTCEmain']) {
             // If we were the source of this call, ignore it
             return;
         }
-        if ($table == 'tx_irfaq_q' && $command == 'delete') {
+        if ('tx_irfaq_q' == $table && 'delete' == $command) {
             $rec = BackendUtility::getRecord($table, $id, 'related');
             $this->saved_related_items = $rec['related'];
         }
     }
 
     /**
-     * Removes all references to deleted FAQ record
+     * Removes all references to deleted FAQ record.
      *
-     * @param    string $command Command. We are interested only in 'delete'
-     * @param    string $table Table name. We work only if 'tx_irfaq_q'
-     * @param    int $id Record uid
-     * @param    mixed $value Unused
-     * @param    \TYPO3\CMS\Core\DataHandling\DataHandler $pObj Reference to parent object
-     * @return    void        Nothing
+     * @param string                                   $command Command. We are interested only in 'delete'
+     * @param string                                   $table   Table name. We work only if 'tx_irfaq_q'
+     * @param int                                      $id      Record uid
+     * @param mixed                                    $value   Unused
+     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $pObj    Reference to parent object
      */
-    function processCmdmap_postProcess($command, $table, $id, $value, &$pObj)
+    public function processCmdmap_postProcess($command, $table, $id, $value, &$pObj)
     {
         if ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_irfaq']['insideTCEmain']) {
             // If we were the source of this call, ignore it
             return;
         }
         /* @var $pObj \TYPO3\CMS\Core\DataHandling\DataHandler */
-        if ($table == 'tx_irfaq_q' && $command == 'delete') {
-            if (count($pObj->errorLog) == 0) {
+        if ('tx_irfaq_q' == $table && 'delete' == $command) {
+            if (0 == count($pObj->errorLog)) {
                 // Remove all references to this item from other items
                 $this->process_relatedItems($id, $this->saved_related_items, '', $pObj);
             }
@@ -155,13 +147,12 @@ class RelatedQuestionsDataHandler
     /**
      * Processes related items for current item.
      *
-     * @param    integer $id UID of current record in tx_irfaq_q
-     * @param    string $oldItemList Comma-separated list of items (previous)
-     * @param    string $newItemList Comma-separated list of items (new)
-     * @param    \TYPO3\CMS\Core\DataHandling\DataHandler $pObj Reference to parent object
-     * @return    void        Nothing
+     * @param int                                      $id          UID of current record in tx_irfaq_q
+     * @param string                                   $oldItemList Comma-separated list of items (previous)
+     * @param string                                   $newItemList Comma-separated list of items (new)
+     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $pObj        Reference to parent object
      */
-    function process_relatedItems($id, $oldItemList, $newItemList, $pObj)
+    public function process_relatedItems($id, $oldItemList, $newItemList, $pObj)
     {
         $oldItemList = GeneralUtility::trimExplode(',', $oldItemList, true);
         sort($oldItemList);
@@ -184,7 +175,7 @@ class RelatedQuestionsDataHandler
             if (in_array($uid, $oldItemList)) {
                 // removed
                 $key = array_search($id, $list[$uid]);
-                if ($key !== false) {
+                if (false !== $key) {
                     unset($list[$uid][$key]);
                 }
             } else {
@@ -197,7 +188,7 @@ class RelatedQuestionsDataHandler
             $datamap = ['tx_irfaq_q' => []];
             foreach ($list as $uid => $values) {
                 $datamap['tx_irfaq_q'][$uid] = [
-                    'related' => implode(',', $values)
+                    'related' => implode(',', $values),
                 ];
             }
             $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_irfaq']['insideTCEmain'] = true;
@@ -214,4 +205,3 @@ class RelatedQuestionsDataHandler
         }
     }
 }
-

@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_q',
@@ -8,8 +9,8 @@ return [
         'cruser_id' => 'cruser_id',
         'sortby' => 'sorting',
         'delete' => 'deleted',
-        'versioningWS' => TRUE,
-        'versioning_followPages' => TRUE,
+        'versioningWS' => true,
+        'versioning_followPages' => true,
         'origUid' => 't3_origuid',
         'transOrigPointerField' => 'l18n_parent',
         'transOrigDiffSourceField' => 'l18n_diffsource',
@@ -23,7 +24,7 @@ return [
         'searchFields' => 'q, q_from, a, related_links',
     ],
     'interface' => [
-        'showRecordFieldList' => 'hidden,fe_group,q,cat,a,related,faq_files'
+        'showRecordFieldList' => 'hidden,fe_group,q,cat,a,related,faq_files',
     ],
     'types' => [
         '0' => [
@@ -36,7 +37,7 @@ return [
         ],
     ],
     'palettes' => [
-        '1' => ['showitem' => 'fe_group']
+        '1' => ['showitem' => 'fe_group'],
     ],
     'columns' => [
         'hidden' => [
@@ -44,8 +45,8 @@ return [
             'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
-                'default' => '0'
-            ]
+                'default' => '0',
+            ],
         ],
         'fe_group' => [
             'exclude' => 1,
@@ -57,10 +58,10 @@ return [
                     ['', 0],
                     ['LLL:EXT:lang/locallang_general.xlf:LGL.hide_at_login', -1],
                     ['LLL:EXT:lang/locallang_general.xlf:LGL.any_login', -2],
-                    ['LLL:EXT:lang/locallang_general.xlf:LGL.usergroups', '--div--']
+                    ['LLL:EXT:lang/locallang_general.xlf:LGL.usergroups', '--div--'],
                 ],
-                'foreign_table' => 'fe_groups'
-            ]
+                'foreign_table' => 'fe_groups',
+            ],
         ],
         'q' => [
             'exclude' => 0,
@@ -70,7 +71,7 @@ return [
                 'size' => '30',
                 'max' => '255',
                 'eval' => 'required,trim',
-            ]
+            ],
         ],
         'q_from' => [
             'exclude' => 1,
@@ -78,7 +79,7 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => '30',
-            ]
+            ],
         ],
         'cat' => [
             'exclude' => 1,
@@ -92,7 +93,7 @@ return [
                 'minitems' => 0,
                 'maxitems' => 5,
                 'MM' => 'tx_irfaq_q_cat_mm',
-            ]
+            ],
         ],
         'a' => [
             'exclude' => 0,
@@ -115,7 +116,7 @@ return [
                     ],
                 ],
             ],
-            'softref' => 'typolink_tag,images,email[subst],url'
+            'softref' => 'typolink_tag,images,email[subst],url',
         ],
         'expert' => [
             'exclude' => 1,
@@ -124,10 +125,10 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['', 0]
+                    ['', 0],
                 ],
-                'foreign_table' => 'tx_irfaq_expert'
-            ]
+                'foreign_table' => 'tx_irfaq_expert',
+            ],
         ],
         'related' => [
             'exclude' => 1,
@@ -153,7 +154,7 @@ return [
                         'popup_onlyOpenIfSelected' => 1,
                         'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
                         'module' => [
-                            'name' => 'wizard_edit'
+                            'name' => 'wizard_edit',
                         ],
                     ],
                     'add' => [
@@ -163,10 +164,10 @@ return [
                         'params' => [
                             'table' => 'tx_irfaq_q',
                             'pid' => '###CURRENT_PID###',
-                            'setValue' => 'append'
+                            'setValue' => 'append',
                         ],
                         'module' => [
-                            'name' => 'wizard_add'
+                            'name' => 'wizard_add',
                         ],
                     ],
                 ],
@@ -187,10 +188,10 @@ return [
             'config' => [
                 'type' => 'check',
                 'items' => [
-                    ['', '']
+                    ['', ''],
                 ],
-                'default' => '1'
-            ]
+                'default' => '1',
+            ],
         ],
         'disable_comments' => [
             'label' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_q.disable_comments',
@@ -199,10 +200,10 @@ return [
             'config' => [
                 'type' => 'check',
                 'items' => [
-                    ['', '']
+                    ['', ''],
                 ],
-                'default' => '0'
-            ]
+                'default' => '0',
+            ],
         ],
         'comments_closetime' => [
             'exclude' => 1,
@@ -214,7 +215,7 @@ return [
                 'max' => '20',
                 'eval' => 'datetime',
                 'checkbox' => '0',
-            ]
+            ],
         ],
         'sys_language_uid' => [
             'exclude' => 1,
@@ -226,9 +227,9 @@ return [
                 'foreign_table_where' => 'ORDER BY sys_language.title',
                 'items' => [
                     ['LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages', -1],
-                    ['LLL:EXT:lang/locallang_general.xlf:LGL.default_value', 0]
-                ]
-            ]
+                    ['LLL:EXT:lang/locallang_general.xlf:LGL.default_value', 0],
+                ],
+            ],
         ],
         'l18n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
@@ -242,12 +243,12 @@ return [
                 ],
                 'foreign_table' => 'tx_irfaq_q',
                 'foreign_table_where' => 'AND tx_irfaq_q.uid=###REC_FIELD_l18n_parent### AND tx_irfaq_q.sys_language_uid IN (-1,0)',
-            ]
+            ],
         ],
         'l18n_diffsource' => [
             'config' => [
-                'type' => 'passthrough'
-            ]
+                'type' => 'passthrough',
+            ],
         ],
     ],
 ];

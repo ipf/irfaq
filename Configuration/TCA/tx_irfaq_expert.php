@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_expert',
@@ -15,10 +16,10 @@ return [
         'searchFields' => 'name, email, url',
     ],
     'interface' => [
-        'showRecordFieldList' => 'name, email, url'
+        'showRecordFieldList' => 'name, email, url',
     ],
     'types' => [
-        '0' => ['showitem' => 'name, email, url']
+        '0' => ['showitem' => 'name, email, url'],
     ],
     'columns' => [
         'name' => [
@@ -28,7 +29,7 @@ return [
                 'type' => 'input',
                 'size' => '30',
                 'eval' => 'required,trim',
-            ]
+            ],
         ],
         'email' => [
             'exclude' => 1,
@@ -38,7 +39,7 @@ return [
                 'size' => '30',
                 'checkbox' => '',
                 'eval' => 'nospace',
-            ]
+            ],
         ],
         'url' => [
             'exclude' => 1,
@@ -47,7 +48,7 @@ return [
                 'type' => 'input',
                 'size' => '30',
                 'checkbox' => '',
-            ]
+            ],
         ],
         'sys_language_uid' => [
             'exclude' => 1,
@@ -59,9 +60,9 @@ return [
                 'foreign_table_where' => 'ORDER BY sys_language.title',
                 'items' => [
                     ['LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages', -1],
-                    ['LLL:EXT:lang/locallang_general.xlf:LGL.default_value', 0]
-                ]
-            ]
+                    ['LLL:EXT:lang/locallang_general.xlf:LGL.default_value', 0],
+                ],
+            ],
         ],
         'l18n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
@@ -75,12 +76,12 @@ return [
                 ],
                 'foreign_table' => 'tx_irfaq_expert',
                 'foreign_table_where' => 'AND tx_irfaq_expert.uid=###REC_FIELD_l18n_parent### AND tx_irfaq_expert.sys_language_uid IN (-1,0)',
-            ]
+            ],
         ],
         'l18n_diffsource' => [
             'config' => [
-                'type' => 'passthrough'
-            ]
+                'type' => 'passthrough',
+            ],
         ],
     ],
 ];

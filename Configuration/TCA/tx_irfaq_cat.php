@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_cat',
@@ -19,13 +20,13 @@ return [
         'searchFields' => 'title',
     ],
     'interface' => [
-        'showRecordFieldList' => 'hidden,fe_group,title'
+        'showRecordFieldList' => 'hidden,fe_group,title',
     ],
     'types' => [
-        '0' => ['showitem' => 'hidden,--palette--;;1,title,shortcut']
+        '0' => ['showitem' => 'hidden,--palette--;;1,title,shortcut'],
     ],
     'palettes' => [
-        '1' => ['showitem' => 'fe_group']
+        '1' => ['showitem' => 'fe_group'],
     ],
     'columns' => [
         'hidden' => [
@@ -33,8 +34,8 @@ return [
             'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
-                'default' => '0'
-            ]
+                'default' => '0',
+            ],
         ],
         'fe_group' => [
             'exclude' => 1,
@@ -46,10 +47,10 @@ return [
                     ['', 0],
                     ['LLL:EXT:lang/locallang_general.xlf:LGL.hide_at_login', -1],
                     ['LLL:EXT:lang/locallang_general.xlf:LGL.any_login', -2],
-                    ['LLL:EXT:lang/locallang_general.xlf:LGL.usergroups', '--div--']
+                    ['LLL:EXT:lang/locallang_general.xlf:LGL.usergroups', '--div--'],
                 ],
-                'foreign_table' => 'fe_groups'
-            ]
+                'foreign_table' => 'fe_groups',
+            ],
         ],
         'title' => [
             'exclude' => 0,
@@ -58,7 +59,7 @@ return [
                 'type' => 'input',
                 'size' => '30',
                 'eval' => 'required,trim',
-            ]
+            ],
         ],
         'shortcut' => [
             'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.shortcut_page',
@@ -70,8 +71,8 @@ return [
                 'size' => '1',
                 'maxitems' => '1',
                 'minitems' => '0',
-                'show_thumbs' => '1'
-            ]
+                'show_thumbs' => '1',
+            ],
         ],
         'sys_language_uid' => [
             'exclude' => 1,
@@ -83,9 +84,9 @@ return [
                 'foreign_table_where' => 'ORDER BY sys_language.title',
                 'items' => [
                     ['LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages', -1],
-                    ['LLL:EXT:lang/locallang_general.xlf:LGL.default_value', 0]
-                ]
-            ]
+                    ['LLL:EXT:lang/locallang_general.xlf:LGL.default_value', 0],
+                ],
+            ],
         ],
         'l18n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
@@ -99,12 +100,12 @@ return [
                 ],
                 'foreign_table' => 'tx_irfaq_cat',
                 'foreign_table_where' => 'AND tx_irfaq_cat.uid=###REC_FIELD_l18n_parent### AND tx_irfaq_cat.sys_language_uid IN (-1,0)',
-            ]
+            ],
         ],
         'l18n_diffsource' => [
             'config' => [
-                'type' => 'passthrough'
-            ]
+                'type' => 'passthrough',
+            ],
         ],
     ],
 ];
