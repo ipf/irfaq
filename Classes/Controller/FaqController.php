@@ -27,9 +27,11 @@ namespace Netcreators\Irfaq\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Service\MarkerBasedTemplateService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Plugin\AbstractPlugin;
 
 /**
@@ -271,7 +273,7 @@ class FaqController extends AbstractPlugin
         }
 
         // read template file
-        $this->templateCode = $this->cObj->fileResource($this->conf['templateFile']);
+        $this->templateCode = file_get_contents($this->getTypoScriptFrontendController()->tmpl->getFileName($this->conf['templateFile']));
 
         $this->initCategories(); // initialize category-array
         $this->initExperts(); // initialize experts-array
@@ -312,21 +314,24 @@ class FaqController extends AbstractPlugin
      */
     public function initCategories()
     {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_irfaq_q');
+
         $rootlineStoragePid = $this->getStorageSiterootPids();
         $storagePidCsv = implode(
             ', ',
             [$rootlineStoragePid['_STORAGE_PID'], $this->conf['pidList']]
         );
 
-        $res = $this->getDatabaseConnection()->exec_SELECTquery(
-            '*',
-            'tx_irfaq_cat LEFT JOIN tx_irfaq_q_cat_mm ON tx_irfaq_q_cat_mm.uid_foreign = tx_irfaq_cat.uid',
-            'tx_irfaq_cat.pid IN ('.$storagePidCsv.')'.$this->cObj->enableFields('tx_irfaq_cat'),
-            '',
-            'tx_irfaq_cat.sorting'
-        );
+        $res = $queryBuilder
+            ->select('*')
+            ->from('tx_irfaq_cat', 'c')
+            ->leftJoin('c', 'tx_irfaq_q_cat_mm', 'cm', 'tx_irfaq_q_cat_mm.uid_foreign = tx_irfaq_cat.uid')
+            ->where($queryBuilder->expr()->in('tx_irfaq_cat.pid ', $storagePidCsv))
+            ->orderBy('tx_irfaq_cat.sorting', 'ASC')
+            ->execute()
+            ->fetchAll();
 
-        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
+        foreach ($res as $row) {
             $catTitle = $row['title'];
             $catShortcut = $row['shortcut'];
 
@@ -372,16 +377,18 @@ class FaqController extends AbstractPlugin
      */
     public function searchView()
     {
-        $template['total'] = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_SEARCH###');
+        $markerTemplate = GeneralUtility::makeInstance(MarkerBasedTemplateService::class);
+
+        $template['total'] = $markerTemplate->getSubpart($this->templateCode, '###TEMPLATE_SEARCH###');
 
         $formURL = htmlspecialchars(
             $this->pi_linkTP_keepPIvars_url(['cat' => null], 0, 1, $this->conf['searchPid'])
         );
 
-        $content = $this->cObj->substituteMarker($template['total'], '###FORM_URL###', $formURL);
-        $content = $this->cObj->substituteMarker($content, '###SWORDS###', htmlspecialchars($this->piVars['swords']));
-        $content = $this->cObj->substituteMarker($content, '###SEARCH_BUTTON###', $this->pi_getLL('searchButtonLabel'));
-        $content = $this->cObj->substituteMarker($content, '###SEARCH_LEGEND###', $this->pi_getLL('searchLegendLabel'));
+        $content = $markerTemplate->substituteMarker($template['total'], '###FORM_URL###', $formURL);
+        $content = $markerTemplate->substituteMarker($content, '###SWORDS###', htmlspecialchars($this->piVars['swords']));
+        $content = $markerTemplate->substituteMarker($content, '###SEARCH_BUTTON###', $this->pi_getLL('searchButtonLabel'));
+        $content = $markerTemplate->substituteMarker($content, '###SEARCH_LEGEND###', $this->pi_getLL('searchLegendLabel'));
 
         return $content;
     }
@@ -393,14 +400,16 @@ class FaqController extends AbstractPlugin
      */
     public function dynamicView()
     {
+        $markerTemplate = GeneralUtility::makeInstance(MarkerBasedTemplateService::class);
+
         $template = [];
         $subpartArray = [];
 
-        $template['total'] = $this->cObj->getSubpart(
+        $template['total'] = $markerTemplate->getSubpart(
             $this->templateCode,
             '###TEMPLATE_DYNAMIC###'
         );
-        $template['content'] = $this->cObj->getSubPart(
+        $template['content'] = $markerTemplate->getSubPart(
             $template['total'],
             '###CONTENT###'
         );
@@ -414,7 +423,7 @@ class FaqController extends AbstractPlugin
                 '###TEXT_SHOW###' => $this->pi_getLL('text_show'),
                 '###TEXT_HIDE###' => $this->pi_getLL('text_hide'),
             ];
-            $content = $this->cObj->substituteMarkerArrayCached(
+            $content = $markerTemplate->substituteMarkerArrayCached(
                 $template['total'],
                 $markerArray,
                 $subpartArray
@@ -437,20 +446,21 @@ class FaqController extends AbstractPlugin
     public function staticView()
     {
         $templateName = 'TEMPLATE_STATIC';
+        $markerTemplate = GeneralUtility::makeInstance(MarkerBasedTemplateService::class);
 
         $template = [];
-        $template['total'] = $this->cObj->getSubpart(
+        $template['total'] = $markerTemplate->getSubpart(
             $this->templateCode,
             '###'.$templateName.'###'
         );
 
-        $temp = $this->cObj->getSubPart($template['total'], '###QUESTIONS###');
+        $temp = $markerTemplate->getSubPart($template['total'], '###QUESTIONS###');
         $subpartArray['###QUESTIONS###'] = $this->fillMarkers($temp);
 
-        $temp = $this->cObj->getSubPart($template['total'], '###ANSWERS###');
+        $temp = $markerTemplate->getSubPart($template['total'], '###ANSWERS###');
         $subpartArray['###ANSWERS###'] = $this->fillMarkers($temp);
 
-        $content = $this->cObj->substituteMarkerArrayCached(
+        $content = $markerTemplate->substituteMarkerArrayCached(
             $template['total'],
             [],
             $subpartArray
@@ -469,11 +479,13 @@ class FaqController extends AbstractPlugin
     public function fillMarkers($template)
     {
         $content = '';
-
+        $markerTemplate = GeneralUtility::makeInstance(MarkerBasedTemplateService::class);
         $where = '1 = 1'.$this->cObj->enableFields('tx_irfaq_q');
         $selectConf = $this->getSelectConf($where);
         $selectConf['selectFields'] = 'DISTINCT tx_irfaq_q.uid, tx_irfaq_q.pid, tx_irfaq_q.q, tx_irfaq_q.q_from, tx_irfaq_q.a, tx_irfaq_q.cat, tx_irfaq_q.expert, tx_irfaq_q.related, tx_irfaq_q.related_links, tx_irfaq_q.enable_ratings, tx_irfaq_q.sys_language_uid, tx_irfaq_q.l18n_parent, tx_irfaq_q.l18n_diffsource';
         $selectConf['orderBy'] = $this->conf['orderBy'] ? 'tx_irfaq_q.'.$this->conf['orderBy'] : 'tx_irfaq_q.sorting';
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_irfaq_q');
 
         $res = $this->getDatabaseConnection()->exec_SELECT_queryArray(
             [
@@ -486,11 +498,10 @@ class FaqController extends AbstractPlugin
             ]
         );
 
-        $this->faqCount = $this->getDatabaseConnection()->sql_num_rows($res);
-
         $i = 1;
         while (false != ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res))) {
-            $GLOBALS['TSFE']->sys_page->versionOL('tx_irfaq_q', $row);
+            $typoscriptFrontendController = GeneralUtility::makeInstance(TypoScriptFrontendController::class);
+            $typoscriptFrontendController->sys_page->versionOL('tx_irfaq_q', $row);
             if (is_array($row)) {
                 if (($row = $this->getLanguageOverlay('tx_irfaq_q', $row))) {
                     $markerArray = $this->fillMarkerArrayForRow($row, $i);
@@ -498,12 +509,11 @@ class FaqController extends AbstractPlugin
                     $markerArray['###COUNT###'] = $i++;
                     $markerArray['###TOTALCOUNT###'] = $this->faqCount;
 
-                    $subpart = $this->cObj->getSubPart($template, '###FAQ###');
-                    $content .= $this->cObj->substituteMarkerArrayCached($subpart, $markerArray);
+                    $subpart = $markerTemplate->getSubPart($template, '###FAQ###');
+                    $content .= $markerTemplate->substituteMarkerArrayCached($subpart, $markerArray);
                 }
             }
         }
-        $this->getDatabaseConnection()->sql_free_result($res);
 
         return $content;
     }
@@ -618,7 +628,7 @@ class FaqController extends AbstractPlugin
 
         // do the search and add the result to the $where string
         if ($this->piVars['swords']) {
-            $selectConf['where'] .= $this->searchWhere(trim($this->piVars['swords']));
+            $selectConf['where'] .= $this->cObj->searchWhere(trim($this->piVars['swords']), $this->searchFieldList, 'tx_irfaq_q');
         } elseif (in_array('SEARCH', $this->conf['code'])) {
             // display an empty list, if 'emptySearchAtStart' is set.
             $selectConf['where'] .= ($this->conf['emptySearchAtStart'] ? ' AND 1=0' : '');
@@ -628,27 +638,13 @@ class FaqController extends AbstractPlugin
     }
 
     /**
-     * Generates a search where clause.
-     *
-     * @param string $searchWords
-     *
-     * @return string querypart
-     */
-    public function searchWhere($searchWords)
-    {
-        $where = $this->cObj->searchWhere($searchWords, $this->searchFieldList, 'tx_irfaq_q');
-
-        return $where;
-    }
-
-    /**
      * Format string with general_stdWrap from configuration.
      *
      * @param    string        string to wrap
      *
      * @return string wrapped string
      */
-    public function formatStr($str)
+    private function formatStr($str)
     {
         if (is_array($this->conf['general_stdWrap.']) || count($this->conf['general_stdWrap.']) > 0) {
             $str = $this->cObj->stdWrap(
@@ -667,7 +663,7 @@ class FaqController extends AbstractPlugin
      *
      * @return string the list of validated fields
      */
-    public function validateFields($fieldlist)
+    private function validateFields($fieldlist)
     {
         $fArr = GeneralUtility::trimExplode(',', $fieldlist, 1);
 
@@ -689,45 +685,47 @@ class FaqController extends AbstractPlugin
      *
      * @return string Generated HTML or empty string if no related entries
      */
-    public function getRelatedEntries($list)
+    private function getRelatedEntries($list)
     {
+        $markerTemplate = GeneralUtility::makeInstance(MarkerBasedTemplateService::class);
+
         $content = '';
         $list = GeneralUtility::trimExplode(',', $list, true); // Have to do that because there can be empty elements!
         if (count($list)) {
-            $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
-                '*',
-                'tx_irfaq_q',
-                'uid IN ('.implode(',', $list).')'.
-                $this->cObj->enableFields('tx_irfaq_q')
-            );
-            if (is_array($rows)) {
-                $template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RELATED_FAQ###');
-                $templateInner = $this->cObj->getSubpart($template, '###RELATED_FAQ_ENTRY###');
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_irfaq_q');
+            $rows = $queryBuilder
+                ->select('*')
+                ->from('tx_irfaq_q')
+                ->where($queryBuilder->expr()->in('uid', $list))
+                ->execute()
+                ->fetchAll();
 
-                foreach ($rows as $row) {
-                    // TODO Anchor is customizable in template!
-                    if (($row = $this->getLanguageOverlay('tx_irfaq_q', $row))) {
-                        $markers = [
-                            '###RELATED_FAQ_ENTRY_TITLE###' => $this->formatStr(
-                                    $this->cObj->stdWrap(htmlspecialchars($row['q']), $this->conf['question_stdWrap.'])
-                                ),
-                            '###RELATED_FAQ_ENTRY_HREF###' => $this->pi_list_linkSingle(
-                                    '',
-                                    $row['uid'],
-                                    true,
-                                    [],
-                                    true
-                                ),
-                        ];
-                        $content .= $this->cObj->substituteMarkerArrayCached($templateInner, $markers);
-                    }
+            $template = $markerTemplate->getSubpart($this->templateCode, '###TEMPLATE_RELATED_FAQ###');
+            $templateInner = $markerTemplate->getSubpart($template, '###RELATED_FAQ_ENTRY###');
+
+            foreach ($rows as $row) {
+                // TODO Anchor is customizable in template!
+                if (($row = $this->getLanguageOverlay('tx_irfaq_q', $row))) {
+                    $markers = [
+                        '###RELATED_FAQ_ENTRY_TITLE###' => $this->formatStr(
+                                $this->cObj->stdWrap(htmlspecialchars($row['q']), $this->conf['question_stdWrap.'])
+                            ),
+                        '###RELATED_FAQ_ENTRY_HREF###' => $this->pi_list_linkSingle(
+                                '',
+                                $row['uid'],
+                                true,
+                                [],
+                                true
+                            ),
+                    ];
+                    $content .= $markerTemplate->substituteMarkerArrayCached($templateInner, $markers);
                 }
-                $content = $this->cObj->substituteMarkerArrayCached(
-                    $template,
-                    ['###TEXT_RELATED_FAQ###' => $this->pi_getLL('text_related_faq')],
-                    ['###RELATED_FAQ_ENTRY###' => $content]
-                );
             }
+            $content = $markerTemplate->substituteMarkerArrayCached(
+                $template,
+                ['###TEXT_RELATED_FAQ###' => $this->pi_getLL('text_related_faq')],
+                ['###RELATED_FAQ_ENTRY###' => $content]
+            );
         }
 
         return $content;
@@ -742,6 +740,8 @@ class FaqController extends AbstractPlugin
      */
     public function getRelatedLinks($list)
     {
+        $markerTemplate = GeneralUtility::makeInstance(MarkerBasedTemplateService::class);
+
         $content = '';
         $list = GeneralUtility::trimExplode(
             chr(10),
@@ -749,16 +749,16 @@ class FaqController extends AbstractPlugin
             true
         ); // Have to do that because there can be empty elements!
         if (count($list)) {
-            $template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_RELATED_LINKS###');
-            $templateInner = $this->cObj->getSubpart($template, '###RELATED_LINK_ENTRY###');
+            $template = $markerTemplate->getSubpart($this->templateCode, '###TEMPLATE_RELATED_LINKS###');
+            $templateInner = $markerTemplate->getSubpart($template, '###RELATED_LINK_ENTRY###');
             foreach ($list as $link) {
                 $markers = [
                     '###RELATED_LINK_ENTRY_TITLE###' => htmlspecialchars($link),
                     '###RELATED_LINK_ENTRY_HREF###' => $link,
                 ];
-                $content .= $this->cObj->substituteMarkerArrayCached($templateInner, $markers);
+                $content .= $markerTemplate->substituteMarkerArrayCached($templateInner, $markers);
             }
-            $content = $this->cObj->substituteMarkerArrayCached(
+            $content = $markerTemplate->substituteMarkerArrayCached(
                 $template,
                 ['###TEXT_RELATED_LINKS###' => $this->pi_getLL('text_related_links')],
                 ['###RELATED_LINK_ENTRY###' => $content]
@@ -901,13 +901,17 @@ class FaqController extends AbstractPlugin
      */
     public function singleView()
     {
-        $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
-            '*',
-            'tx_irfaq_q',
-            'uid='.intval($this->showUid).
-            $this->cObj->enableFields('tx_irfaq_q')
-        );
-        if (count($rows)) {
+        $markerTemplate = GeneralUtility::makeInstance(MarkerBasedTemplateService::class);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_irfaq_q');
+
+        $rows = $queryBuilder
+            ->select('*')
+            ->from('tx_irfaq_q')
+            ->where($queryBuilder->expr()->eq('uid', (int) $this->showUid))
+            ->execute()
+            ->fetchAll();
+
+        if (count($rows) > 0) {
             if (($row = $this->getLanguageOverlay('tx_irfaq_q', $rows[0]))) {
                 $rows[0] = $row;
             }
@@ -915,7 +919,7 @@ class FaqController extends AbstractPlugin
         if (0 == count($rows)) {
             $content = $this->pi_getLL('noSuchEntry');
         } else {
-            $template = $this->cObj->getSubpart($this->templateCode, '###TEMPLATE_SINGLE_VIEW###');
+            $template = $markerTemplate->getSubpart($this->templateCode, '###TEMPLATE_SINGLE_VIEW###');
             $markers = $this->fillMarkerArrayForRow($rows[0], 1);
             unset($this->piVars['showUid']);
             $markers['###BACK_HREF###'] = $this->cObj->typoLink_URL(
@@ -923,7 +927,7 @@ class FaqController extends AbstractPlugin
             );
             $markers['###BACK_TEXT###'] = $this->pi_getLL('back');
             $markers['###FAQ_ID###'] = $rows[0]['uid'];
-            $content = $this->cObj->substituteMarkerArrayCached($template, $markers);
+            $content = $markerTemplate->substituteMarkerArrayCached($template, $markers);
             $this->cObj->lastChanged($row['tstamp']);
         }
 
@@ -937,11 +941,13 @@ class FaqController extends AbstractPlugin
      */
     public function staticSeparateView()
     {
-        $template_sub = $this->cObj->getSubPart($this->templateCode, '###TEMPLATE_STATIC_SEPARATE###');
-        $template = $this->cObj->getSubPart($template_sub, '###QUESTIONS###');
+        $markerTemplate = GeneralUtility::makeInstance(MarkerBasedTemplateService::class);
+
+        $template_sub = $markerTemplate->getSubPart($this->templateCode, '###TEMPLATE_STATIC_SEPARATE###');
+        $template = $markerTemplate->getSubPart($template_sub, '###QUESTIONS###');
         $subpartArray['###QUESTIONS###'] = $this->fillMarkers($template);
 
-        return $this->cObj->substituteMarkerArrayCached($template_sub, [], $subpartArray);
+        return $markerTemplate->substituteMarkerArrayCached($template_sub, [], $subpartArray);
     }
 
     /**
@@ -1028,6 +1034,6 @@ class FaqController extends AbstractPlugin
      */
     protected function getTypoScriptFrontendController()
     {
-        return $GLOBALS['TSFE'];
+        return GeneralUtility::makeInstance(TypoScriptFrontendController::class);
     }
 }

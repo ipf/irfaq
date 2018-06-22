@@ -10,7 +10,6 @@ return [
         'sortby' => 'sorting',
         'delete' => 'deleted',
         'versioningWS' => true,
-        'versioning_followPages' => true,
         'origUid' => 't3_origuid',
         'transOrigPointerField' => 'l18n_parent',
         'transOrigDiffSourceField' => 'l18n_diffsource',
@@ -29,11 +28,6 @@ return [
     'types' => [
         '0' => [
             'showitem' => 'hidden,--palette--;;1,q,a,--div--;Details,q_from,expert,related,related_links,faq_files,cat,--div--;LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_q.extra_tab,enable_ratings,disable_comments,comments_closetime',
-            'columnsOverrides' => [
-                'a' => [
-                    'defaultExtras' => 'richtext:rte_transform[flag=rte_enabled|mode=ts_css]',
-                ],
-            ],
         ],
     ],
     'palettes' => [
@@ -102,6 +96,7 @@ return [
                 'type' => 'text',
                 'cols' => 30,
                 'rows' => 5,
+                'options' => 'richtext:rte_transform[flag=rte_enabled|mode=ts_css]',
                 'wizards' => [
                     '_PADDING' => 2,
                     'RTE' => [
@@ -109,7 +104,7 @@ return [
                         'RTEonly' => 1,
                         'type' => 'script',
                         'title' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:bodytext.W.RTE',
-                        'icon' => 'EXT:backend/Resources/Public/Images/FormFieldWizard/wizard_rte.gif',
+                        'icon' => 'actions-wizard-rte',
                         'module' => [
                             'name' => 'wizard_rte',
                         ],
@@ -147,7 +142,7 @@ return [
                 'wizards' => [
                     '_PADDING' => 2,
                     'edit' => [
-                        'type' => 'popup',
+                        'fieldControl' => 'editPopup',
                         'title' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_q.related_edit',
                         'script' => 'wizard_edit.php',
                         'icon' => 'actions-open',
@@ -158,7 +153,7 @@ return [
                         ],
                     ],
                     'add' => [
-                        'type' => 'script',
+                        'fieldControl' => 'addRecord',
                         'title' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_q.related_new',
                         'icon' => 'actions-add',
                         'params' => [
@@ -212,9 +207,9 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 12,
-                'max' => 20,
                 'eval' => 'datetime',
                 'checkbox' => '0',
+                'renderType' => 'inputDateTime',
             ],
         ],
         'sys_language_uid' => [

@@ -26,9 +26,8 @@ namespace Netcreators\Irfaq\System\Backend;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use TYPO3\CMS\Core\Localization\LocalizationFactory;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
  * Class that adds the wizard icon.
@@ -39,38 +38,15 @@ class WizardIcon
 {
     public function proc($wizardItems)
     {
-        $languageService = $this->getLanguageService();
-        $localLang = $this->getLocalLang();
+        $tsfe = GeneralUtility::makeInstance(TypoScriptFrontendController::class);
 
         $wizardItems['plugins_tx_irfaq_pi1'] = [
-            'icon' => ExtensionManagementUtility::extRelPath('irfaq').'Resources/Public/Icons/ce_wiz.gif',
-            'title' => $languageService->getLLL('pi1_title_irfaq', $localLang),
-            'description' => $languageService->getLLL('pi1_plus_wiz_description_irfaq', $localLang),
+            'icon' => 'EXT:irfaq/Resources/Public/Icons/ce_wiz.gif',
+            'title' => $tsfe->sL('pi1_title_irfaq'),
+            'description' => $tsfe->sL('pi1_plus_wiz_description_irfaq'),
             'params' => '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=irfaq_pi1',
         ];
 
         return $wizardItems;
-    }
-
-    /**
-     * Get parsed localization array.
-     *
-     * @return array The LOCAL_LANG array
-     */
-    public function getLocalLang()
-    {
-        $llFile = ExtensionManagementUtility::extPath('irfaq').'Resources/Private/Language/locallang.xlf';
-
-        $localizationFactory = GeneralUtility::makeInstance(LocalizationFactory::class);
-
-        return $localizationFactory->getParsedData($llFile, $this->getLanguageService()->lang);
-    }
-
-    /**
-     * @return \TYPO3\CMS\Lang\LanguageService
-     */
-    protected function getLanguageService()
-    {
-        return $GLOBALS['LANG'];
     }
 }
