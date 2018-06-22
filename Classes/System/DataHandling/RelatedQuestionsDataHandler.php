@@ -1,6 +1,6 @@
 <?php
 
-namespace Netcreators\Irfaq\System\Backend\DataHandling;
+namespace Netcreators\Irfaq\System\DataHandling;
 
 /***************************************************************
  *  Copyright notice
