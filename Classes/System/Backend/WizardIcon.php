@@ -26,8 +26,8 @@ namespace Netcreators\Irfaq\System\Backend;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
  * Class that adds the wizard icon.
@@ -38,12 +38,12 @@ class WizardIcon
 {
     public function proc($wizardItems)
     {
-        $tsfe = GeneralUtility::makeInstance(TypoScriptFrontendController::class);
+        $languageService = GeneralUtility::makeInstance(LanguageService::class);
 
         $wizardItems['plugins_tx_irfaq_pi1'] = [
             'icon' => 'EXT:irfaq/Resources/Public/Icons/ce_wiz.gif',
-            'title' => $tsfe->sL('pi1_title_irfaq'),
-            'description' => $tsfe->sL('pi1_plus_wiz_description_irfaq'),
+            'title' => $languageService->sL('pi1_title_irfaq'),
+            'description' => $languageService->sL('pi1_plus_wiz_description_irfaq'),
             'params' => '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=irfaq_pi1',
         ];
 
