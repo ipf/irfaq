@@ -19,7 +19,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['irfaq'] = \Netcreators\Irfaq\System\DataHandling\RelatedQuestionsDataHandler::class;
 
 // Hook to comments for comments closing
-$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['comments']['closeCommentsAfter']['irfaq'] = 'EXT:irfaq/Classes/Hooks/Comments/CloseCommentsAfterHook.php:Netcreators\Irfaq\Hooks\Comments\CloseCommentsAfterHook->irfaqHook';
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['comments']['closeCommentsAfter']['irfaq'] = 'Netcreators\\Irfaq\\Hooks\\Comments\\CloseCommentsAfterHook->irfaqHook';
 
 // Backend Page Module hook
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['irfaq_pi1'][] = 'EXT:irfaq/Classes/System/Backend/PageModule/ExtensionSummaryProvider.php:Netcreators\Irfaq\System\Backend\PageModule\ExtensionSummaryProvider->getExtensionSummary';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['irfaq_pi1'][] = 'Netcreators\\Irfaq\\System\\Backend\\PageModule\\ExtensionSummaryProvider->getExtensionSummary';

@@ -44,7 +44,6 @@ class ExtensionSummaryProvider
      */
     public function getExtensionSummary($params, &$pObj)
     {
-        $languageService = $this->getLanguageService();
         $result = '';
 
         if ('irfaq_pi1' == $params['row']['list_type']) {
@@ -58,22 +57,22 @@ class ExtensionSummaryProvider
                          ) as $mode) {
                     switch ($mode) {
                         case 'DYNAMIC':
-                            $modes[] = $languageService->sL(
+                            $modes[] = $this->getLanguageService()->sL(
                                 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq.pi_flexform.view_dynamic'
                             );
                             break;
                         case 'STATIC':
-                            $modes[] = $languageService->sL(
+                            $modes[] = $this->getLanguageService()->sL(
                                 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq.pi_flexform.view_static'
                             );
                             break;
                         case 'STATIC_SEPARATE':
-                            $modes[] = $languageService->sL(
+                            $modes[] = $this->getLanguageService()->sL(
                                 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq.pi_flexform.view_static_separate'
                             );
                             break;
                         case 'SEARCH':
-                            $modes[] = $languageService->sL(
+                            $modes[] = $this->getLanguageService()->sL(
                                 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq.pi_flexform.view_search'
                             );
                             break;
@@ -82,7 +81,7 @@ class ExtensionSummaryProvider
                 $result = implode(', ', $modes);
             }
             if (!$result) {
-                $result = $languageService->sL('LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq.pi_flexform.no_view');
+                $result = $this->getLanguageService()->sL('LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq.pi_flexform.no_view');
             }
         }
 
