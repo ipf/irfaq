@@ -77,7 +77,7 @@ class RelatedQuestionsDataHandler
      * @param array                                    $fieldArray Added or updated fields
      * @param \TYPO3\CMS\Core\DataHandling\DataHandler $pObj       Reference to TCEmain
      */
-    public function processDatamap_afterDatabaseOperations($status, $table, $id, $fieldArray, &$pObj)
+    public function processDatamap_afterDatabaseOperations($status, $table, $id, array &$fieldArray, DataHandler &$pObj)
     {
         if ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_irfaq']['insideTCEmain']) {
             // If we were the source of this call, ignore it
@@ -129,7 +129,7 @@ class RelatedQuestionsDataHandler
      * @param mixed                                    $value   Unused
      * @param \TYPO3\CMS\Core\DataHandling\DataHandler $pObj    Reference to parent object
      */
-    public function processCmdmap_postProcess($command, $table, $id, $value, &$pObj)
+    public function processCmdmap_postProcess($command, $table, $id, $value, DataHandler &$pObj)
     {
         if ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_irfaq']['insideTCEmain']) {
             // If we were the source of this call, ignore it
@@ -153,7 +153,7 @@ class RelatedQuestionsDataHandler
      * @param string                                   $newItemList Comma-separated list of items (new)
      * @param \TYPO3\CMS\Core\DataHandling\DataHandler $pObj        Reference to parent object
      */
-    public function process_relatedItems($id, $oldItemList, $newItemList, $pObj)
+    public function process_relatedItems($id, $oldItemList, $newItemList, DataHandler &$pObj)
     {
         $oldItemList = GeneralUtility::trimExplode(',', $oldItemList, true);
         sort($oldItemList);

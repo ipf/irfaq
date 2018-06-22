@@ -136,7 +136,7 @@ class ext_update
                                 strlen($ffArray['data']['sDEF'][$sLang][$field]['vDEF']) > 0 &&
                                 (!isset($ffArray['data'][$sheet][$sLang][$field]) ||
                                     !isset($ffArray['data'][$sheet][$sLang][$field]['vDEF']) ||
-                                    ($replaceEmpty && 0 == strlen($ffArray['data'][$sheet][$sLang][$field]['vDEF'])))
+                                    ($replaceEmpty && 0 === strlen($ffArray['data'][$sheet][$sLang][$field]['vDEF'])))
                             ) {
                                 $ffArray['data'][$sheet][$sLang][$field]['vDEF'] =
                                     $ffArray['data']['sDEF'][$sLang][$field]['vDEF'];

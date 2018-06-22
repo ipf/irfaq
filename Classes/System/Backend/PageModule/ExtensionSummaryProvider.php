@@ -46,7 +46,7 @@ class ExtensionSummaryProvider
     {
         $result = '';
 
-        if ('irfaq_pi1' == $params['row']['list_type']) {
+        if ('irfaq_pi1' === $params['row']['list_type']) {
             $data = GeneralUtility::xml2array($params['row']['pi_flexform']);
             if (is_array($data)) {
                 $modes = [];

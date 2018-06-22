@@ -290,7 +290,7 @@ class FaqController extends AbstractPlugin
 
         $this->content_languages = [$this->getTypoScriptFrontendController()->sys_language_uid];
 
-        if ('' != $languages && 'content_fallback' == $this->sys_language_mode) {
+        if ('' !== $languages && 'content_fallback' === $this->sys_language_mode) {
             foreach (GeneralUtility::trimExplode(',', $languages, true) as $language) {
                 $this->content_languages[] = $language;
             }
@@ -487,7 +487,7 @@ class FaqController extends AbstractPlugin
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_irfaq_q');
 
-        $res = $this->getDatabaseConnection()->exec_SELECT_queryArray(
+        $res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray(
             [
                 'SELECT' => $selectConf['selectFields'],
                 'FROM' => 'tx_irfaq_q'.($selectConf['leftjoin'] ? ' LEFT OUTER JOIN '.$selectConf['leftjoin'] : ''),
@@ -499,7 +499,7 @@ class FaqController extends AbstractPlugin
         );
 
         $i = 1;
-        while (false != ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res))) {
+        while (false != ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
             $typoscriptFrontendController = GeneralUtility::makeInstance(TypoScriptFrontendController::class);
             $typoscriptFrontendController->sys_page->versionOL('tx_irfaq_q', $row);
             if (is_array($row)) {
@@ -916,7 +916,7 @@ class FaqController extends AbstractPlugin
                 $rows[0] = $row;
             }
         }
-        if (0 == count($rows)) {
+        if (0 === count($rows)) {
             $content = $this->pi_getLL('noSuchEntry');
         } else {
             $template = $markerTemplate->getSubpart($this->templateCode, '###TEMPLATE_SINGLE_VIEW###');
@@ -994,7 +994,7 @@ class FaqController extends AbstractPlugin
                 return $result;
             }
         }
-        if ('' == $this->sys_language_mode) {
+        if (empty($this->sys_language_mode)) {
             return $row;
         }
 
@@ -1019,14 +1019,6 @@ class FaqController extends AbstractPlugin
         }
 
         return $res;
-    }
-
-    /**
-     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 
     /**

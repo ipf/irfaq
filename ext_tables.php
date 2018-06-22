@@ -8,7 +8,7 @@ if (!defined('TYPO3_MODE')) {
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_irfaq_cat');
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_irfaq_expert');
 
-if (TYPO3_MODE == 'BE') {
+if (TYPO3_MODE === 'BE') {
     $TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses'][\Netcreators\Irfaq\System\Backend\WizardIcon::class] =
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('irfaq')
             .'Classes/System/Backend/WizardIcon.php';
