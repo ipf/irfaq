@@ -5,7 +5,8 @@ $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['irfaq_pi1'] 
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(
     ['LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tt_content.list_type_pi1', 'irfaq_pi1'],
-    'list_type'
+    'list_type',
+    'irfaq'
 );
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue(
