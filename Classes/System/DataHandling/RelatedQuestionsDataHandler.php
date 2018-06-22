@@ -59,7 +59,7 @@ class RelatedQuestionsDataHandler
         //	- we are in update operation (=$id is integer)
         //  - Below version condition added to make it compatible with Typo3 v6.1 as well -  19-07-2013
 
-        if ('tx_irfaq_q' == $table
+        if ('tx_irfaq_q' === $table
             && MathUtility::canBeInterpretedAsInteger($id)
             && isset($incomingFieldArray['related'])
         ) {
@@ -83,10 +83,10 @@ class RelatedQuestionsDataHandler
             // If we were the source of this call, ignore it
             return;
         }
-        if ('tx_irfaq_q' == $table) {
-            if ('new' == $status) {
+        if ('tx_irfaq_q' === $table) {
+            if ('new' === $status) {
                 if ($fieldArray['related']) {
-                    $id = ('-' == $id[0] ? substr($id, 1) : $id);
+                    $id = ('-' === $id[0] ? substr($id, 1) : $id);
                     /* @var $pObj \TYPO3\CMS\Core\DataHandling\DataHandler */
                     $id = $pObj->substNEWwithIDs[$id];
                     $this->process_relatedItems($id, '', $fieldArray['related'], $pObj);
@@ -114,7 +114,7 @@ class RelatedQuestionsDataHandler
             // If we were the source of this call, ignore it
             return;
         }
-        if ('tx_irfaq_q' == $table && 'delete' == $command) {
+        if ('tx_irfaq_q' === $table && 'delete' === $command) {
             $rec = BackendUtility::getRecord($table, $id, 'related');
             $this->saved_related_items = $rec['related'];
         }
@@ -136,8 +136,8 @@ class RelatedQuestionsDataHandler
             return;
         }
         /* @var $pObj \TYPO3\CMS\Core\DataHandling\DataHandler */
-        if ('tx_irfaq_q' == $table && 'delete' == $command) {
-            if (0 == count($pObj->errorLog)) {
+        if ('tx_irfaq_q' === $table && 'delete' === $command) {
+            if (0 === count($pObj->errorLog)) {
                 // Remove all references to this item from other items
                 $this->process_relatedItems($id, $this->saved_related_items, '', $pObj);
             }
