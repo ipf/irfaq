@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "typo3/cms": "^7.6.15 || ^8.7.0"
+        "typo3/cms": "^8.7.0 || ^9.3.0"
     },
     "replace": {
         "irfaq": "self.version",
