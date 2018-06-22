@@ -26,6 +26,7 @@ namespace Netcreators\Irfaq\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
@@ -144,7 +145,7 @@ class FaqController extends AbstractPlugin
         $this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
 
         // "CODE" decides what is rendered: code can be added by TS or FF with priority on FF
-        $this->showUid = intval($this->piVars['showUid']);
+        $this->showUid = (int) $this->piVars['showUid'];
         if ($this->showUid) {
             $this->conf['code'] = ['SINGLE'];
             $this->conf['categoryMode'] = 0;
@@ -339,7 +340,6 @@ class FaqController extends AbstractPlugin
                 $this->categories['0'][$row['uid']] = $catTitle;
             }
         }
-        $this->getDatabaseConnection()->sql_free_result($res);
     }
 
     /**
@@ -348,20 +348,21 @@ class FaqController extends AbstractPlugin
     public function initExperts()
     {
         // Fetching experts
-        $res = $this->getDatabaseConnection()->exec_SELECTquery(
-            '*',
-            'tx_irfaq_expert',
-            '1=1'.$this->cObj->enableFields('tx_irfaq_expert')
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_irfaq_expert');
 
-        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
+        $res = $queryBuilder
+            ->select('*')
+            ->from('tx_irfaq_expert')
+            ->execute()
+            ->fetchAll();
+
+        foreach ($res as $row) {
             if (($row = $this->getLanguageOverlay('tx_irfaq_expert', $row))) {
                 $this->experts[$row['uid']]['name'] = $row['name'];
                 $this->experts[$row['uid']]['url'] = $row['url'];
                 $this->experts[$row['uid']]['email'] = $row['email'];
             }
         }
-        $this->getDatabaseConnection()->sql_free_result($res);
     }
 
     /**

@@ -29,6 +29,9 @@ namespace Netcreators\Irfaq\Hooks\Comments;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Commenting system hook. Hook receives the following in <code>$params</code>:
  * <ul>
@@ -70,27 +73,19 @@ class CloseCommentsAfterHook
     public function getCloseTime($table, $uid, &$cObj)
     {
         $result = 0;
-        $recs = $this->getDatabaseConnection()->exec_SELECTgetRows(
-            'disable_comments,comments_closetime',
-            $table,
-            'uid='.intval($uid).$cObj->enableFields($table)
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $recs = $queryBuilder
+            ->select(['disable_comments', 'comments_closetime'])
+            ->from($table)
+            ->where($queryBuilder->expr()->eq('uid', (int) $uid))
+            ->execute()
+            ->fetchAll();
+
         if (count($recs)) {
             $result = $recs[0]['disable_comments'] ? 0 :
                 ($recs[0]['comments_closetime'] ? $recs[0]['comments_closetime'] : PHP_INT_MAX);
         }
 
         return $result;
-    }
-
-    /**
-     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        /* @var \TYPO3\CMS\Core\Database\DatabaseConnection $TYPO3_DB */
-        global $TYPO3_DB;
-
-        return $TYPO3_DB;
     }
 }

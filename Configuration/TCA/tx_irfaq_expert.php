@@ -27,7 +27,7 @@ return [
             'label' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_expert.name',
             'config' => [
                 'type' => 'input',
-                'size' => '30',
+                'size' => 30,
                 'eval' => 'required,trim',
             ],
         ],
@@ -36,7 +36,7 @@ return [
             'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.email',
             'config' => [
                 'type' => 'input',
-                'size' => '30',
+                'size' => 30,
                 'checkbox' => '',
                 'eval' => 'nospace',
             ],
@@ -46,7 +46,7 @@ return [
             'label' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_expert.url',
             'config' => [
                 'type' => 'input',
-                'size' => '30',
+                'size' => 30,
                 'checkbox' => '',
             ],
         ],

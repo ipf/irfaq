@@ -68,8 +68,8 @@ return [
             'label' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_q.q',
             'config' => [
                 'type' => 'input',
-                'size' => '30',
-                'max' => '255',
+                'size' => 30,
+                'max' => 255,
                 'eval' => 'required,trim',
             ],
         ],
@@ -78,7 +78,7 @@ return [
             'label' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_q.q_from',
             'config' => [
                 'type' => 'input',
-                'size' => '30',
+                'size' => 30,
             ],
         ],
         'cat' => [
@@ -100,8 +100,8 @@ return [
             'label' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_q.a',
             'config' => [
                 'type' => 'text',
-                'cols' => '30',
-                'rows' => '5',
+                'cols' => 30,
+                'rows' => 5,
                 'wizards' => [
                     '_PADDING' => 2,
                     'RTE' => [
@@ -211,8 +211,8 @@ return [
             'label' => 'LLL:EXT:irfaq/Resources/Private/Language/locallang_db.xlf:tx_irfaq_q.comments_closetime',
             'config' => [
                 'type' => 'input',
-                'size' => '12',
-                'max' => '20',
+                'size' => 12,
+                'max' => 20,
                 'eval' => 'datetime',
                 'checkbox' => '0',
             ],
