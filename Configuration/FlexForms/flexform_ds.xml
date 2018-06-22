@@ -47,6 +47,7 @@
                                 </items>
                                 <maxitems>100</maxitems>
                                 <size>4</size>
+                                <renderType>selectMultipleSideBySide</renderType>
                                 <multiple>1</multiple>
                                 <selectedListStyle>width:300px</selectedListStyle>
                                 <itemListStyle>width:300px</itemListStyle>
@@ -60,6 +61,7 @@
                             </label>
                             <config>
                                 <type>select</type>
+                                <renderType>selectSingle</renderType>
                                 <items type="array">
                                     <numIndex index="0" type="array">
                                         <numIndex index="0">
@@ -109,7 +111,6 @@
                                 <size>3</size>
                                 <maxitems>22</maxitems>
                                 <minitems>0</minitems>
-                                <show_thumbs>1</show_thumbs>
                             </config>
                         </TCEforms>
                     </pages>
@@ -118,6 +119,7 @@
                             <label>LLL:EXT:lang/locallang_general.php:LGL.recursive</label>
                             <config>
                                 <type>select</type>
+                                <renderType>selectSingle</renderType>
                                 <items type="array">
                                     <numIndex index="0" type="array">
                                         <numIndex index="0"></numIndex>
@@ -207,6 +209,7 @@
                                     </numIndex>
                                 </items>
                                 <maxitems>1</maxitems>
+                                <renderType>selectSingle</renderType>
                                 <size>1</size>
                             </config>
                         </TCEforms>
@@ -232,6 +235,7 @@
                                 <maxitems>20</maxitems>
                                 <size>5</size>
                                 <selectedListStyle>width:150px</selectedListStyle>
+                                <renderType>selectMultipleSideBySide</renderType>
                                 <itemListStyle>width:150px</itemListStyle>
                                 <allowNonIdValues>1</allowNonIdValues>
                             </config>
@@ -278,7 +282,6 @@
                                 <size>1</size>
                                 <maxitems>1</maxitems>
                                 <minitems>0</minitems>
-                                <show_thumbs>1</show_thumbs>
                             </config>
                         </TCEforms>
                     </searchPid>
